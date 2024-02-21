@@ -4,3 +4,4 @@ flask-sqlalchemy
 flask-httpauth
 python-dotenv
 waitress
+pymysql
