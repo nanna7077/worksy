@@ -2,11 +2,12 @@
 
 FROM python:3.12-slim-buster
 
-WORKDIR /app
+ENV PYTHONUNBUFFERED True
+ENV APP_HOME /app
 
-COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+WORKDIR $APP_HOME
+COPY . ./
 
-COPY . .
+RUN pip3 install --no-cache-dir -r requirements.txt
 
-CMD [ "python3", "pywsgi.py" ]
+CMD exec python3 pywsgi.py
