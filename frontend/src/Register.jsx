@@ -12,8 +12,7 @@ export default function Register() {
     const [phone, setPhone] = useState("");
 
     const register = () => {
-        alert(import.meta.env.VITE_API_URL)
-        fetch(import.meta.env.VITE_API_URL + "/register", {
+        fetch(process.env.REACT_APP_API_URL + "/accounts/create/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -59,6 +58,7 @@ export default function Register() {
                             onChange={(e) => {setFullName(e.target.value)}}
                         />
                         <Input
+                            type="username"
                             className="w-full h-[50px] rounded-sm"
                             placeholder="Username"
                             onChange={(e) => {setUsername(e.target.value)}}

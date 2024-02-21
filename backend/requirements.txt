@@ -3,3 +3,4 @@ flask-cors
 flask-sqlalchemy
 flask-httpauth
 python-dotenv
+waitress

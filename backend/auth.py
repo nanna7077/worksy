@@ -7,27 +7,31 @@ auth = HTTPTokenAuth(scheme="Bearer", realm=None, header=constants.AUTHENTICATIO
 
 @auth.verify_token
 def verify_password(sessionkey):
-    session = Session.query.filter_by(sessionkey=sessionkey).first()
-    if not session or session.expires_at < datetime.datetime.utcnow():
-        return False
-    account = Account.query.filter_by(id=session.accountID).first()
-    if not account or account.isDisabled:
-        return False
-    return True
+    try:
+        session = Session.query.filter(Session.sessionkey == sessionkey).first()
+        if not session or session.expires_at < datetime.datetime.utcnow():
+            return None
+        return Account.query.filter(Account.id == session.account_id).first()
+    except Exception as err:
+        return None
 
 @auth.error_handler
 def handle401(error):
     return {"error": "UnAuthorized"}, 401
 
 def createSession(accountID, deviceName, IPAddress):
+    sessionkey = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(256))
     session = Session(
-        accountID=accountID,
+        account_id=accountID,
         expires_at=datetime.datetime.utcnow() + datetime.timedelta(days=constants.SESSION_EXPIRATION_DAYS),
+        deviceName=deviceName,
+        IPAddress=IPAddress,
+        sessionkey=sessionkey
     )
     db.session.add(session)
     db.session.commit()
 
-    return session.sessionkey
+    return sessionkey
 
 def getRequestUser(sessionkey):
     requestsession = Session.query.filter_by(sessionkey=sessionkey).first()
