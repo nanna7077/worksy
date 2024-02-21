@@ -11,6 +11,27 @@ import Profile from "./Profile";
 import Notifications from "./Notifications";
 import Job from "./Job";
 import Messages from "./Messages";
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDbia_Y0J5mQ9JAe5xBJXTj1MIEsfcaeK8",
+  authDomain: "worksy-fff70.firebaseapp.com",
+  projectId: "worksy-fff70",
+  storageBucket: "worksy-fff70.appspot.com",
+  messagingSenderId: "517208843814",
+  appId: "1:517208843814:web:ec9baef6da3e65e903a8e7",
+  measurementId: "G-87Y3FL3E4R"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
 function App() {
     const theme = extendTheme({

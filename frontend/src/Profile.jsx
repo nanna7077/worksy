@@ -1,5 +1,4 @@
 import { Avatar, Button, Chip, ChipDelete, DialogTitle, Input, LinearProgress, Modal, ModalDialog } from "@mui/joy";
-import Rating from "@mui/material/Rating";
 import { useEffect } from "react";
 import { useState } from "react";
 import NavBottom from "./Nav";
