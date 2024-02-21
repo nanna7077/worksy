@@ -1,1 +1,7 @@
-{}
+{
+  "projects": {
+    "staging": "worksy-fff70"
+  },
+  "targets": {},
+  "etags": {}
+}
