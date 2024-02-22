@@ -1,13 +1,8 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.12-slim-buster
-
+FROM python:3.12
 ENV PYTHONUNBUFFERED True
-ENV APP_HOME /app
-
-WORKDIR $APP_HOME
-COPY . ./
-
+ADD . .
 RUN pip3 install --no-cache-dir -r requirements.txt
-
-CMD exec python3 pywsgi.py
+EXPOSE 5000
+CMD ["python3", "./pywsgi.py"]

@@ -1,0 +1,6 @@
+services:
+  web:
+    build: .
+    command: python pywsgi.py
+    ports:
+      - "5000:80"
