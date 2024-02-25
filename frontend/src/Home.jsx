@@ -24,6 +24,11 @@ export default function Home() {
     const [showSearchResults_jobs, setShowSearchResults_jobs] = useState([]);
     const [showSearchResults_workers, setShowSearchResults_workers] = useState([]);
 
+    const [showSpeakWithWorksyModal, setShowSpeakWithWorksyModal] = useState(false);
+    const [showSpeakWithWorksyModal_messages, setShowSpeakWithWorksyModal_messages] = useState([]);
+    const [showSpeakWithWorksyModal_messagefield, setShowSpeakWithWorksyModal_messagefield] = useState("");
+    const [showSpeakWithWorksyModal_context, setShowSpeakWithWorksyModal_context] = useState(null);
+
     useEffect(() => {
         navigator.geolocation.getCurrentPosition((position) => {
             setMapsDefaultProps(
@@ -204,6 +209,30 @@ export default function Home() {
         window.location.href='/job/' + jobID;
     }
 
+    function showSpeakWithWorksyModal_sendToWorksyAI() {
+        setIsLoading(true);
+        fetch(process.env.REACT_APP_API_URL + (showSpeakWithWorksyModal_context ? `/genai/conversation?question=${showSpeakWithWorksyModal_messagefield}&context=${showSpeakWithWorksyModal_context}` : `/genai/conversation?question=${showSpeakWithWorksyModal_messagefield}`), {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + window.localStorage.getItem("sessionkey"),
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            setIsLoading(false);
+            if (data.error != undefined) {
+                return;
+            }
+            const usrMsg = {"content": `${showSpeakWithWorksyModal_messagefield}`, role: "user", "createdOn": (new Date()).toISOString()};
+            const botMsg = {"content": data.response, role: "assistant", "createdOn": (new Date()).toISOString()}
+            setShowSpeakWithWorksyModal_messages([usrMsg, ...showSpeakWithWorksyModal_messages]);
+            setShowSpeakWithWorksyModal_messages([botMsg, ...showSpeakWithWorksyModal_messages]);
+            setShowSpeakWithWorksyModal_messagefield("");
+            setShowSpeakWithWorksyModal_context(data.context);
+        });
+    }
+
     return (
         <div className="">
             <Modal open={showMoreJobsModal} onClose={() => {setShowMoreJobsModal(false);}}>
@@ -300,6 +329,30 @@ export default function Home() {
                     </Box>
                 </ModalDialog>
             </Modal>
+            <Modal open={showSpeakWithWorksyModal} onClose={() => setShowSpeakWithWorksyModal(false)}>
+                <ModalDialog className="overflow-y-auto w-[100vw] h-[90vh]">
+                    <Box className='m-1 backdrop-blur-sm rounded-sm p-1 border-black flex flex-col gap-1 h-[100vh] overflow-y-auto cursor-pointer'>
+                        <div className='flex justify-between'>
+                            <span className='text-md font-bold'>Speak with Worksy</span>
+                        </div>
+                        <div className='flex flex-col-reverse h-full p-4 bg-blue-50 overflow-y-scroll gap-3'>
+                            {showSpeakWithWorksyModal_messages.map((message, mid) =>
+                                (<div className={"flex flex-col items-end"  + (message.role == 'user' ? " self-end" : " self-start")} key={mid}>
+                                    <div className="w-fit h-fit rounded-sm p-2 bg-slate-400 text-base">
+                                        {message.content}
+                                    </div>
+                                    <div className="text-xs">{message.createdOn}</div>
+                                    </div>
+                                ))
+                            }
+                        </div>
+                        <div className='flex gap-2 w-full'>
+                            <Input placeholder="Message" className='w-full' value={showSpeakWithWorksyModal_messagefield} onChange={(e) => {setShowSpeakWithWorksyModal_messagefield(e.target.value)}} />
+                            <Button onClick={() => {showSpeakWithWorksyModal_sendToWorksyAI()}}>Send</Button>
+                        </div>
+                    </Box>
+                </ModalDialog>
+            </Modal>
             {isLoading && <LinearProgress />}
             {
                 user ?
@@ -325,6 +378,9 @@ export default function Home() {
                         </div>
                         <div className='bg-[#EBF3FF] rounded-md p-2 text-xs cursor-pointer' onClick={() => {setShowSearchResults(true)}}>
                             Search
+                        </div>
+                        <div className='bg-[#EBF3FF] rounded-md p-2 text-xs cursor-pointer' onClick={() => {setShowSpeakWithWorksyModal(true)}}>
+                            Speak with Worksy
                         </div>
                     </div>
                     <NavBottom />

@@ -8,3 +8,4 @@ database
 build
 instance
 backend/instance/database
+worksykey.json

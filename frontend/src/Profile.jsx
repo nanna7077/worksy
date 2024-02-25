@@ -183,6 +183,25 @@ export default function Profile() {
         });
     }
 
+    function logout() {
+        fetch(process.env.REACT_APP_API_URL + "/accounts/update/logout", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + window.localStorage.getItem("sessionkey"),
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.error != undefined) {
+                return;
+            }
+            window.localStorage.removeItem("sessionkey").then(() => {
+                window.location.href = "/";
+            })
+        });
+    }
+
     return (<div className="">
         {isLoading && <LinearProgress color="primary" />}
         <Modal open={showSkillAddModal} onClose={() => {setShowSkillAddModal(false);}}>
@@ -221,7 +240,7 @@ export default function Profile() {
             <div style={{background: "rgba(255, 255, 255, .4)"}} className="m-2 p-2 backdrop-blur-lg">
                 {user && 
                 <div className="flex w-full justify-center items-center gap-3">
-                    <Avatar src={user.profile_picture} sx={{width: 150, height: 150}}>{user.username}</Avatar>
+                    <Avatar src={user.profile_picture} onClick={() => {window.open("https://gravatar.com/profile/avatars", "_blank")}} sx={{width: 150, height: 150}}>{user.username}</Avatar>
                     <div className="flex flex-col items-center">
                         <div className="text-2xl font-bold" onClick={() => {if(!user.is_self) return; updateFullname()}}>{user.fullname} <span className="text-sm">({user.username})</span> </div>
                         {user.is_self && <div className="text-sm"><span onClick={() => {if(!user.is_self) return; updateEmail()}}>{user.email}</span> | <span onClick={() => {if(!user.is_self) return; updatePhone()}}>{user.phone}</span></div>}
@@ -239,6 +258,9 @@ export default function Profile() {
                         </div>
                     </div>
                 </div>}
+            </div>
+            <div className="p-4 flex flex-col gap-2">
+                <Button className="w-full" onClick={logout} variant="outlined">Logout</Button>
             </div>
             <div style={{background: "rgba(255, 255, 255, .4)"}} className="m-2 p-2 backdrop-blur-lg flex flex-col gap-2">
                 <div className="flex gap-2 items-center">

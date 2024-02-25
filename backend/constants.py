@@ -6,6 +6,7 @@ SESSION_EXPIRATION_DAYS = 365
 DEFAULT_LIST_RADIUS = 10
 DEFAULT_SEARCH_LIMIT = 10
 DEFAULT_ANNOUNCE_RADIUS = 10
+SELF_URL = "https://backend.worksy.app/"
 
 class SystemEventType(Enum):
     ALERT = 0

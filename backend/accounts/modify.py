@@ -197,3 +197,29 @@ def removeTag():
         db.session.add(event)
         db.session.commit()
         return {"error": f"Unhandled exception encountered. Please report to Admin with error ID {event.id}"}, 500
+
+@accounts_modify.route('/logout', methods=['GET'])
+@auth.login_required
+def logout():
+    try:
+        account = auth.current_user()
+        if not account:
+            return jsonify({"error": "Account not found"}), 404
+        session = Session.query.filter(Session.sessionkey == request.headers.get(constants.AUTHENTICATION_HEADER)).first()
+        if not session:
+            return jsonify({"error": "Session not found"}), 404
+        db.session.remove(session)
+        db.session.commit()
+
+        return jsonify({"message": "Logged out"}), 200
+
+    except Exception as err:
+        event = SystemEvent(
+            orginated_at = "accounts_modify_logout",
+            description = str(err),
+            context = str(request),
+            level=constants.SystemEventType.ERROR.value
+        )
+        db.session.add(event)
+        db.session.commit()
+        return {"error": f"Unhandled exception encountered. Please report to Admin with error ID {event.id}"}, 500

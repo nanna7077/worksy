@@ -26,8 +26,8 @@ export default function Notifications() {
                 return;
             }
             if (!readNotifications) {
-                setReadNotifications(data.readNotifications);
-            } else { setReadNotifications(readNotifications.concat(data.readNotifications)); }
+                setReadNotifications(data.notifications);
+            } else { setReadNotifications(readNotifications.concat(data.notifications)); }
             setReadNotificationsLastOffset(readNotificationsLastOffset + 10);
         });
     }
@@ -47,8 +47,8 @@ export default function Notifications() {
                 return;
             }
             if (!unreadNotifications) {
-                setUnreadNotifications(data.unreadNotifications);
-            } else { setUnreadNotifications(unreadNotifications.concat(data.unreadNotifications)); }
+                setUnreadNotifications(data.notifications);
+            } else { setUnreadNotifications(unreadNotifications.concat(data.notifications)); }
             setUnreadNotificationsLastOffset(unreadNotificationsLastOffset + 10);
         });
     }

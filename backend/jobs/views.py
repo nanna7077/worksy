@@ -126,8 +126,8 @@ def getJobsByRadius():
             if not lat or not long:
                 raise Exception
             radius = float(radius)
-            lat = float(lat)
-            long = float(long)
+            lat = float(lat, account.last_lat)
+            long = float(long, account.last_long)
         except:
             return jsonify({"message": "Missing arguments"}), 400
         

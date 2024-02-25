@@ -5,3 +5,4 @@ flask-httpauth
 python-dotenv
 waitress
 psycopg2-binary
+google-generativeai

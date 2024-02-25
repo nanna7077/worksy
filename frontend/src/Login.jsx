@@ -17,7 +17,7 @@ export default function Login() {
         .then((response) => response.json())
         .then((data) => {
             if (data.error != undefined) {
-                if (data.error == "Unauthorized") {
+                if (data.error == "UnAuthorized") {
                     return;
                 }
                 alert(data.error);
@@ -41,6 +41,9 @@ export default function Login() {
         .then((response) => response.json())
         .then((data) => {
             if (data.error != undefined) {
+                if (data.error == "Unauthorized") {
+                    return;
+                }
                 alert(data.error);
                 return;
             }
