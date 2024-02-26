@@ -4,11 +4,12 @@ from auth import *
 import constants
 from .functions import *
 import dotenv
+import os
 import google.generativeai as genai
 
 genai_views = Blueprint("genai_views", __name__)
 
-VERTEX_AI_API_KEY = dotenv.get_key(key_to_get="VERTEX_AI_API_KEY", dotenv_path=".env")
+VERTEX_AI_API_KEY = os.getenv("VERTEX_AI_API_KEY") or dotenv.get_key(key_to_get="VERTEX_AI_API_KEY", dotenv_path=".env")
 
 # llm = VertexAI(temperature=0, model_name="text-bison@001", location="us-central1", key=VERTEX_AI_API_KEY)
 
