@@ -1,0 +1,15 @@
+[Unit]
+Description=Worksy Launcher
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=nanna7077
+EnvironmentFile=/home/nanna7077/worksy/backend/.env
+ExecStart=python3 /home/nanna7077/worksy/backend/pywsgi.py
+
+[Install]
+WantedBy=multi-user.target
