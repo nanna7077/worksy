@@ -41,6 +41,9 @@ def readNotifications():
             return jsonify({"error": "Account not found"}), 404
         
         notifications = Notification.query.filter_by(account_id=account.id, is_read=False).all()
+        for notification in notifications:
+            notification.is_read = True
+        db.session.commit()
 
         return jsonify({
             "notifications": [
@@ -48,7 +51,7 @@ def readNotifications():
                     "id": notification.id,
                     "message": notification.message,
                     "created_at": notification.created_at,
-                    "ago": notification.created_at
+                    "ago": datetime.timedelta(seconds=int((datetime.datetime.utcnow() - notification.created_at).total_seconds())).total_seconds()
                 } for notification in notifications
             ]
         }), 200
@@ -81,7 +84,7 @@ def unreadNotifications():
                     "id": notification.id,
                     "message": notification.message,
                     "created_at": notification.created_at,
-                    "ago": notification.created_at
+                    "ago": datetime.timedelta(seconds=int((datetime.datetime.utcnow() - notification.created_at).total_seconds())).total_seconds()
                 } for notification in notifications
             ]
         }), 200

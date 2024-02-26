@@ -49,6 +49,9 @@ def get_self_posted_jobs():
                 "duration_range_unit": job.duration_range_unit,
                 "is_available": job.is_available,
                 "created_at": job.created_at,
+                "applications": JobApplication.query.filter_by(job_id = job.id).count(),
+                "is_hired": JobApplication.query.filter_by(job_id = job.id, status="hired").first() != None,
+                "is_paid": (lambda x: x.is_paid if x else True)(AccountJobRelation.query.filter_by(job_id = job.id, is_paid=False).first()),
                 "tags": [
                     (lambda tag: {"id": tag.id, "name": tag.name})(Tag.query.filter_by(id=x.tag_id).first()) for x in JobTagRelation.query.filter_by(job_id = job.id)
                 ]
@@ -126,9 +129,10 @@ def getJobsByRadius():
             if not lat or not long:
                 raise Exception
             radius = float(radius)
-            lat = float(lat, account.last_lat)
-            long = float(long, account.last_long)
-        except:
+            lat = float(lat if lat else account.last_lat)
+            long = float(long if long else account.last_long)
+        except Exception as err:
+            print(err)
             return jsonify({"message": "Missing arguments"}), 400
         
         modlat, modlong = constants.haversine_add_distance_to_coordinates(lat, long, radius)
@@ -260,7 +264,8 @@ def getPreviousJobs():
                 "poster_rating": job.poster_rating,
                 "created_at": job.created_at,
                 "finished_at": job.finished_at,
-                "duration": job.duration,   
+                "duration": job.duration,
+                "is_paid": job.is_paid,
                 "ago": datetime.timedelta(seconds=int((datetime.datetime.utcnow() - job.created_at).total_seconds())).total_seconds(),
             } for job in prevjobs]
         })

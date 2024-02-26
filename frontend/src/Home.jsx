@@ -164,6 +164,7 @@ export default function Home() {
             if (data.error != undefined) {
                 return;
             }
+            console.log("showMoreJobsModal_jobs", data)
             setShowMoreJobsModal_jobs(data.jobs);
         });
     }, [showMoreJobsModal, showMoreJobsModal_radius])

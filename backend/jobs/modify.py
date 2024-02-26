@@ -152,6 +152,37 @@ def markComplete(jobId):
         db.session.commit()
         return {"error": f"Unhandled exception encountered. Please report to Admin with error ID {event.id}"}, 500
 
+@jobs_modify.route('/<int:jobId>/pay', methods=['PUT'])
+@auth.login_required
+def pay(jobId):
+    try:
+        account = auth.current_user()
+        if not account:
+            return jsonify({"error": "Account not found"}), 404
+        
+        job = Job.query.filter_by(id=jobId).first()
+        if not job:
+            return jsonify({"error": "Job not found"}), 404
+        jobRelation = AccountJobRelation.query.filter(AccountJobRelation.job_id == jobId, AccountJobRelation.is_paid == False).first()
+        if not jobRelation:
+            return jsonify({"error": "Job already paid"}), 400
+        
+        jobRelation.is_paid = True
+
+        db.session.commit()
+
+        return jsonify({"message": "Job status updated"}), 200
+    except Exception as err:
+        event = SystemEvent(
+            orginated_at = "jobs_modify_pay",
+            description = str(err),
+            context = str(request),
+            level=constants.SystemEventType.ERROR.value
+        )
+        db.session.add(event)
+        db.session.commit()
+        return {"error": f"Unhandled exception encountered. Please report to Admin with error ID {event.id}"}, 500
+
 @jobs_modify.route('/<int:jobId>/workerRating', methods=['PUT'])
 @auth.login_required
 def setWorkerRating(jobId):

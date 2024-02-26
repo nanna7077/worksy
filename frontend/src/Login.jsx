@@ -68,11 +68,11 @@ export default function Login() {
                     <div className="w-full mt-6 flex gap-2 flex-col items-center p-4">
                         <Input type="username" className="w-full h-[50px] rounded-sm" placeholder="Username" onChange={(e) => setUsername(e.target.value)} />
                         <Input type="password" className="w-full h-[50px] rounded-sm" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
-                        <div className="mt-2 text-sm w-full text-right">
+                        {/* <div className="mt-2 text-sm w-full text-right">
                             <a href="/forgot-password">
                                 Forgot Password?
                             </a>
-                        </div>
+                        </div> */}
                         <Button className="mt-2 w-full h-[50px] rounded-sm" onClick={login}>Login</Button>
                     </div>
                 </div>

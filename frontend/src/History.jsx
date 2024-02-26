@@ -79,6 +79,24 @@ export default function History() {
         });
     }
 
+    function payJob(jobId) {
+        fetch(process.env.REACT_APP_API_URL + `/jobs/update/${jobId}/pay`, {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + window.localStorage.getItem("sessionkey"),
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.error != undefined) {
+                alert(data.error);
+                return;
+            }
+            window.location.reload();
+        });
+    }
+
     useEffect(() => {
         fetch(process.env.REACT_APP_API_URL + "/accounts/view/self", {
             method: "GET",
@@ -140,7 +158,10 @@ export default function History() {
                                             <div>{job.job.address}</div>
                                             <div className="text-xs">Posted By {job.poster.fullname}</div>
                                         </div>
-                                        <Button size="sm" variant="outlined">{job.status}</Button>
+                                        <div className="flex gap-2">
+                                            <Button size="sm" variant="outlined">{job.status}</Button>
+                                            <Button size="sm" variant="outlined">{ (job.is_paid) ? "Paid" : "Not yet paid" }</Button>
+                                        </div>
                                     </div>
                                     <div className="flex gap-2 items-center flex-col md:flex-row mt-2 mb-2">
                                         <div className="text-xs">
@@ -256,8 +277,8 @@ export default function History() {
                         <div className="mt-4 mb-8 flex flex-col gap-4 max-h-[30vh] overflow-y-auto">
 
                             {selfpostedJobs.map((job, jid) => (
-                                <div className="cursor-pointer bg-[rgba(255,255,255,.5)] shadow-md items-center p-4 rounded-lg" key={jid} onClick={()=>{window.location.href="/job/"+job.id}}>
-                                    <div className="flex justify-between w-full">
+                                <div className="cursor-pointer bg-[rgba(255,255,255,.5)] shadow-md items-center p-4 rounded-lg" key={jid}>
+                                    <div className="flex justify-between w-full"  onClick={()=>{window.location.href="/job/"+job.id}}>
                                         <div className="text-lg">
                                             {job.address}
                                         </div>
@@ -265,7 +286,7 @@ export default function History() {
                                             {job.created_at}
                                         </div>
                                     </div>
-                                    <div className="w-full flex gap-4 text-sm">
+                                    <div className="w-full flex gap-6 text-sm items-center">
                                         <div className="flex gap-1 mt-1">
                                             <img className="w-5" src="/icons/clock-circle.svg"/>
                                             <div>
@@ -282,6 +303,26 @@ export default function History() {
                                                 {job.price_range_end}
                                             </div>
                                         </div>
+                                        <div className="flex gap-1 mt-1">
+                                            {job.applications}
+                                        <div className="font-semibold">
+                                            Applications
+                                        </div>
+                                        </div>
+                                        <div className="flex gap-1 mt-1">
+                                            {job.is_hired ? <div className="font-semibold">
+                                                Hired
+                                            </div>: <div className="font-semibold">
+                                                Not Hired
+                                            </div>}
+                                        </div>
+                                        {job.is_hired && <div className="flex gap-1 mt-1">
+                                        {job.is_paid ? <div className="font-semibold">
+                                            Paid
+                                        </div>: <Button className="font-semibold" size="sm" onClick={() => payJob(job.id)}>
+                                            Not Paid Yet. Click here to pay now!
+                                        </Button>}
+                                        </div>}
                                     </div>
                                     {job.tags.map((tag, tid) => 
                                         (<div className="w-full flex flex-wrap mt-3">

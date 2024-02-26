@@ -31,6 +31,7 @@ class AccountJobRelation(db.Model):
     job_id = db.Column(db.Integer, db.ForeignKey("job.id"), nullable=False)
     amount = db.Column(db.Float, nullable=True)
     currency = db.Column(db.String(120), nullable=False)
+    is_paid = db.Column(db.Boolean, default=False, nullable=False)
     status = db.Column(db.String(120), nullable=False)
     worker_rating = db.Column(db.Float, nullable=True) # Rating the worker
     poster_rating = db.Column(db.Float, nullable=True, default=5) # Rating the poster

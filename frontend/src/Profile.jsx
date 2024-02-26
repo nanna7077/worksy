@@ -197,7 +197,7 @@ export default function Profile() {
                 return;
             }
             window.localStorage.removeItem("sessionkey").then(() => {
-                window.location.href = "/";
+                window.location.href = "/login";
             })
         });
     }
