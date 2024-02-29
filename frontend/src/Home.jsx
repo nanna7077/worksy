@@ -1,4 +1,5 @@
 import GoogleMapReact from 'google-map-react';
+import Marker from 'google-map-react';
 import Button from "@mui/joy/Button";
 import { Modal, ModalDialog, DialogTitle, Card, CardContent, Slider, Input, Box } from "@mui/joy";
 import { useEffect, useState } from "react";
@@ -104,7 +105,9 @@ export default function Home() {
                 lng: mapsDefaultProps.center.lng
             },
             map,
-            title: 'You'
+            title: 'You',
+            icon: '/icons/target-small.png',
+            size: 5
         }))
 
         for (const m in currentViewJobs) {

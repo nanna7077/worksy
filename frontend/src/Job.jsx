@@ -201,7 +201,7 @@ export default function Job() {
                         }
                         {user && user.username != job.created_by && user.open_to_work &&
                             <div className="mt-6 flex flex-col gap-2">
-                                <Button onClick={() => { applyToJob() }} className="w-full">Apply</Button>
+                                <Button onClick={() => { applyToJob() }} className="w-full">{job.applied ? "Applied" : "Apply" }</Button>
                                 <Button onClick={() => window.location.href = `/message/${job.created_by}?fromjob=${job.id}&role=applicant"`} variant="solid" className="w-full">Message</Button>
                             </div>
                         }
@@ -209,6 +209,7 @@ export default function Job() {
                             <Button onClick={() => {setShowShareJobModal(true)}} variant="outlined" className="w-full">Share</Button>
                         </div>
                     </div>
+                    <br /><br /><br /><br />
                 </div>
             </div>}
 

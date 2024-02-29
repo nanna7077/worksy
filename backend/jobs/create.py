@@ -104,6 +104,9 @@ def applyJob():
         
         if not job.is_available:
             return jsonify({"message": "Job not available"}), 400
+
+        if JobApplication.query.filter_by(job_id=job_id, account_id=account.id).first():
+            return jsonify({"message": "Already applied"}), 400
         
         jobapplication = JobApplication(
             job_id=job_id,

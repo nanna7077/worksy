@@ -183,26 +183,31 @@ def getJobById(jobId):
         if not job:
             return jsonify({"error": "Job not found"}), 404
         
+        job_ = {
+            "id": job.id,
+            "description": job.description,
+            "address": job.address,
+            "is_available": job.is_available,
+            "created_at": job.created_at,
+            "created_by": Account.query.filter_by(id=job.created_by).first().username,
+            "lat": job.lat,
+            "long": job.long,
+            "currency": job.currency,
+            "price_range_start": job.price_range_start,
+            "price_range_end": job.price_range_end,
+            "duration_range_start": job.duration_range_start,
+            "duration_range_end": job.duration_range_end,
+            "duration_range_unit": job.duration_range_unit,
+            "ago": datetime.timedelta(seconds=int((datetime.datetime.utcnow() - job.created_at).total_seconds())).total_seconds(),
+            "tags": [(lambda tag: {"name": tag.name, "id": tag.id})(Tag.query.filter_by(id=tag_.tag_id).first()) for tag_ in JobTagRelation.query.filter_by(job_id=job.id).all()],
+            "rating": db.session.query(func.avg(AccountJobRelation.poster_rating)).filter_by(worker_account_id=job.created_by).scalar() or 5.0,
+        }
+
+        if account.open_to_work:
+            job_["applied"] = JobApplication.query.filter_by(job_id=job.id, account_id=account.id).first()
+
         return jsonify({
-            "job": {
-                "id": job.id,
-                "description": job.description,
-                "address": job.address,
-                "is_available": job.is_available,
-                "created_at": job.created_at,
-                "created_by": Account.query.filter_by(id=job.created_by).first().username,
-                "lat": job.lat,
-                "long": job.long,
-                "currency": job.currency,
-                "price_range_start": job.price_range_start,
-                "price_range_end": job.price_range_end,
-                "duration_range_start": job.duration_range_start,
-                "duration_range_end": job.duration_range_end,
-                "duration_range_unit": job.duration_range_unit,
-                "ago": datetime.timedelta(seconds=int((datetime.datetime.utcnow() - job.created_at).total_seconds())).total_seconds(),
-                "tags": [(lambda tag: {"name": tag.name, "id": tag.id})(Tag.query.filter_by(id=tag_.tag_id).first()) for tag_ in JobTagRelation.query.filter_by(job_id=job.id).all()],
-                "rating": db.session.query(func.avg(AccountJobRelation.poster_rating)).filter_by(worker_account_id=job.created_by).scalar() or 5.0,
-            }
+            "job": job_
         })
 
     except Exception as err:
