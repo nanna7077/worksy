@@ -204,7 +204,7 @@ def getJobById(jobId):
         }
 
         if account.open_to_work:
-            job_["applied"] = JobApplication.query.filter_by(job_id=job.id, account_id=account.id).first()
+            job_["applied"] = True if JobApplication.query.filter_by(job_id=job.id, account_id=account.id).first() else False
 
         return jsonify({
             "job": job_
