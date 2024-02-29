@@ -31,21 +31,21 @@ export default function Home() {
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition((position) => {
-            setMapsDefaultProps(
-                {
-                center: {
-                    lat: 11.96181368, lng: 79.207205
-                },
-                zoom: 11
-                }
-            )
             // setMapsDefaultProps(
-            //     { center: {
-            //         lat: position.coords.latitude, lng: position.coords.longitude
+            //     {
+            //     center: {
+            //         lat: 11.96181368, lng: 79.207205
             //     },
             //     zoom: 11
             //     }
-            // );
+            // )
+            setMapsDefaultProps(
+                { center: {
+                    lat: position.coords.latitude, lng: position.coords.longitude
+                },
+                zoom: 11
+                }
+            );
         });
     }, [])
 
