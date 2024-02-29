@@ -185,7 +185,7 @@ export default function Job() {
                                                     <Button onClick={() => {markApplicationStatus(application.id, "hired"); setApplicantHired(application.applicant.id)}} color="success" size="sm" variant="outlined">Hire</Button>
                                                 </div>
                                                 <div className="flex gap-2">
-                                                    <Button onClick={() => {window.location.href = `/message/${application.applicant.id}?fromjob=${job.id}&role=poster_application_contact"`}} variant="outlined">Message</Button>
+                                                    <Button onClick={() => {window.location.href = `/messages/${application.applicant.id}?fromjob=${job.id}&role=poster_application_contact"`}} variant="outlined">Message</Button>
                                                     <Button>{application.status}</Button>
                                                 </div>
                                             </div>
@@ -202,7 +202,7 @@ export default function Job() {
                         {user && user.username != job.created_by && user.open_to_work &&
                             <div className="mt-6 flex flex-col gap-2">
                                 <Button onClick={() => { applyToJob() }} className="w-full">{job.applied ? "Applied" : "Apply" }</Button>
-                                <Button onClick={() => window.location.href = `/message/${job.created_by}?fromjob=${job.id}&role=applicant"`} variant="solid" className="w-full">Message</Button>
+                                <Button onClick={() => window.location.href = `/messages/${job.created_by}?fromjob=${job.id}&role=applicant"`} variant="solid" className="w-full">Message</Button>
                             </div>
                         }
                         <div className="mt-6 flex flex-col gap-2">

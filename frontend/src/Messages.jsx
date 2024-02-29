@@ -55,7 +55,7 @@ export default function Messages() {
                     "Authorization": "Bearer " + window.localStorage.getItem("sessionkey"),
                 },
                 body: JSON.stringify({
-                    receiver_id: window.location.href.split("/").at(-1)
+                    receiver_id: window.location.href.split("/").at(-1).split("?")[0],
                 }),
             })
             .then((response) => response.json())
@@ -96,9 +96,11 @@ export default function Messages() {
         if (!value || value.length == 0) return;
         var conversations_ = [];
         for (let i = 0; i < conversations.length; i++) {
-            if (conversations[i].receiver.username.contains(value)) {
-                conversations_.push(conversations[i]);
-            }
+            try {
+                if (conversations[i].sender.username.contains(value)) {
+                    conversations_.push(conversations[i]);
+                }
+            } catch { continue; }
         }
         if (conversations_.length != 0) setConversations(conversations_);
 
@@ -190,6 +192,12 @@ export default function Messages() {
                             {/* {(conversation.messageCount != undefined) && <div className="text-sm rounded-full font-semibold px-2">{conversation.messageCount}</div>} */}
                         </div>
                     </div>))}
+                    {conversations.length == 0 && <div className="h-[8%] w-full bg-gray-200 flex gap-2 p-2 items-center">
+                        <div className="text-base w-full text-center">
+                            No conversations yet.<br/>
+                            <span className="text-sm">Search for a user.</span>
+                        </div>
+                    </div>}
                 </div>}
                 <div className={"h-full w-full md:w-[80vw] m-2 md:block" + (showSidebar ? " hidden" : "")}>
                     <div className="h-[7%] mb-2 bg-slate-200 p-2 flex items-center">
@@ -204,6 +212,11 @@ export default function Messages() {
                                 <div className="text-xs">{message.created_at}</div>
                             </div>
                         ))}
+                    </div>}
+                    {!currentConversation && <div className="h-[85%] sticky bottom-0 bg-slate-200 flex overflow-y-scroll gap-3 items-center justify-center p-4 mb-3">
+                        <div className="w-fit h-fit rounded-sm p-6 bg-slate-300 text-base font-semibold">
+                            Select a conversation
+                        </div>
                     </div>}
                     {currentConversation && <div className="flex gap-2">
                         <Input variant="soft" placeholder="Type a message..." className="w-full" value={currentMessage} onChange={(e) => {setCurrentMessage(e.target.value)}} />
