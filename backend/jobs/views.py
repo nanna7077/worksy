@@ -52,6 +52,17 @@ def get_self_posted_jobs():
                 "applications": JobApplication.query.filter_by(job_id = job.id).count(),
                 "is_hired": JobApplication.query.filter_by(job_id = job.id, status="hired").first() != None,
                 "is_paid": (lambda x: x.is_paid if x else True)(AccountJobRelation.query.filter_by(job_id = job.id, is_paid=False).first()),
+                "hired_workers": [
+                    (lambda x, y: {
+                        "id": x.id,
+                        "username": x.username,
+                        "fullname": x.fullname,
+                        "profile_picture": x.profile_picture,
+                        "amount": y.amount,
+                        "currency": y.currency,
+                        "is_paid": y.is_paid,
+                    })(Account.query.filter_by(id=x.worker_account_id).first(), x) for x in AccountJobRelation.query.filter_by(job_id = job.id).all()
+                ],
                 "tags": [
                     (lambda tag: {"id": tag.id, "name": tag.name})(Tag.query.filter_by(id=x.tag_id).first()) for x in JobTagRelation.query.filter_by(job_id = job.id)
                 ]

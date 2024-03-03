@@ -1,5 +1,6 @@
 import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
+import { Modal, ModalDialog, DialogTitle, AvatarGroup, Avatar, Tooltip, Select, Option } from "@mui/joy";
 import { useEffect, useState } from "react";
 import NavBottom from "./Nav";
 
@@ -11,6 +12,11 @@ export default function History() {
     const [applicationLastOffset, setApplicationLastOffset] = useState(0);
     const [previousJobs, setPreviousJobs] = useState([]);
     const [previousJobsLastOffset, setPreviousJobsLastOffset] = useState(0);
+    
+    const [payModalOpen, setPayModalOpen] = useState(false);
+    const [payJob, setPayJob] = useState(null);
+    const [payJobWorker, setPayJobWorker] = useState(null);
+    const [payJobType, setPayJobType] = useState(null);
 
     function loadPreviousJobs() {
         fetch(process.env.REACT_APP_API_URL + `/jobs/view/history/previous_jobs?offset=${previousJobsLastOffset}&limit=10`, {
@@ -79,7 +85,7 @@ export default function History() {
         });
     }
 
-    function payJob(jobId) {
+    function _payJob(jobId) {
         fetch(process.env.REACT_APP_API_URL + `/jobs/update/${jobId}/pay`, {
             method: 'PUT',
             headers: {
@@ -137,6 +143,49 @@ export default function History() {
 
     return (
         <div className="">
+            <Modal open={payModalOpen} onClose={() => {setPayModalOpen(false);}}>
+                <ModalDialog className="overflow-y-auto">
+                    <DialogTitle className="flex gap-2 items-center">Pay {payJob && <Select placeholder="Select worker" className="w-full" defaultValue={payJobWorker ? payJobWorker.username : ""} onChange={(e) => {if (!e) return; setPayJobWorker(e.target.value);}}>{payJob.hired_workers.map((w, wid) => <Option key={wid} value={w.id}>{w.username}</Option>)}</Select>} </DialogTitle>
+                    <div className='flex gap-3 text-xs items-center'>
+                        {(payJobWorker != null) && JSON.stringify(payJob['hired_workers'][payJobWorker])}
+                    </div>
+                    {payJob && (payJobWorker != null) && <div className="flex flex-col gap-4">
+                        <div className='flex gap-2 justify-between items-center'>
+                            <div className="flex gap-1 font-semibold items-center">
+                                <Avatar size="sm" src={payJob['hired_workers'][payJobWorker].profile_picture} />
+                                <div>{payJob['hired_workers'][payJobWorker].fullname}</div>
+                                <div className="text-xs">({payJob['hired_workers'][payJobWorker].username})</div>
+                            </div>
+                            <div className="flex gap-1 items-center">
+                                {(payJob['hired_workers'][payJobWorker].is_paid == false) ? 
+                                    <div className="text-xs">To pay</div> :
+                                    <div className="text-xs">Paid</div>
+                                }
+                                <div>{payJob['hired_workers'][payJobWorker].currency}</div>
+                                <div>{payJob['hired_workers'][payJobWorker].amount}</div>
+                            </div>
+                        </div>
+                        <div className="mt-2">
+                            <div className="text-sm font-semibold">Payment Options</div>
+                            <div className='flex gap-2 items-center w-full justify-evenly mt-3'>
+                                <Button variant={payJobType == "cash" ? "outlined" : "plain"} onClick={() => {setPayJobType("cash");}}>Cash</Button>
+                                <Button variant={payJobType == "UPI" ? "outlined" : "plain"} onClick={() => {setPayJobType("UPI");}}>UPI</Button>
+                                <Button variant={payJobType == "card" ? "outlined" : "plain"} onClick={() => {setPayJobType("card");}}>Card</Button>
+                            </div>
+                        </div>
+                        <div className='flex gap-2 flex-wrap justify-evenly mt-4'>
+                            {(payJob['hired_workers'][payJobWorker].is_paid == false) ? 
+                                <Button className="!bg-[#58b15e]" onClick={() => {_payJob(payJob.id);}}>Pay</Button>
+                            :
+                                <Button>Paid</Button>
+                            }
+                            <Button variant="outline" onClick={() => {setPayModalOpen(false);}}>Cancel</Button>
+                        </div>
+                    </div>}
+                    {payJob && (payJobWorker == null) && <div className="text-center">Select a worker to pay</div>}
+
+                </ModalDialog>
+            </Modal>
             {
                 user &&
                 
@@ -310,16 +359,23 @@ export default function History() {
                                         </div>
                                         </div>
                                         <div className="flex gap-1 mt-1">
-                                            {job.is_hired ? <div className="font-semibold">
-                                                Hired
+                                            {job.is_hired ? <div className="font-semibold flex gap-2 items-center">
+                                                Hired Workers 
+                                                <AvatarGroup>
+                                                    {job.hired_workers.map((w, wid) =>
+                                                        <Tooltip title={w.username} key={wid}>
+                                                            <Avatar src={w.profile_picture} size="sm" onClick={() => {window.location.href="/profile/"+w.id}}>{w.username[0]}</Avatar>
+                                                        </Tooltip>
+                                                    )}
+                                                </AvatarGroup>
                                             </div>: <div className="font-semibold">
-                                                Not Hired
+                                                Not Hired anyone yet
                                             </div>}
                                         </div>
                                         {job.is_hired && <div className="flex gap-1 mt-1">
                                         {job.is_paid ? <div className="font-semibold">
                                             Paid
-                                        </div>: <Button className="font-semibold" size="sm" onClick={() => payJob(job.id)}>
+                                        </div>: <Button className="font-semibold" size="sm" onClick={() => {setPayJob(job); setPayModalOpen(true)}}>
                                             Not Paid Yet. Click here to pay now!
                                         </Button>}
                                         </div>}
